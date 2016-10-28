@@ -1,0 +1,134 @@
+apply plugin: 'com.android.application'
+
+android {
+
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        applicationId rootProject.ext.applicationId
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+    }
+
+    // rename the apk with the version name
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFile = new File(
+                    output.outputFile.parent + "/${variant.buildType.name}",
+                    "osc-android-${variant.versionName}-${variant.productFlavors[0].name}-${variant.buildType.name}.apk".toLowerCase())
+        }
+    }
+
+    //signing files settings
+    signingConfigs {
+
+        debug {
+//            storeFile file(RELEASE_STORE_FILE)//测试版本不需要签名，后续换成自己的签名
+//            storePassword RELEASE_STORE_PASSWORD
+//            keyAlias RELEASE_KEY_ALIAS
+//            keyPassword RELEASE_KEY_PASSWORD
+        }
+
+        release {
+//            storeFile file(RELEASE_STORE_FILE)
+//            storePassword RELEASE_STORE_PASSWORD
+//            keyAlias RELEASE_KEY_ALIAS
+//            keyPassword RELEASE_KEY_PASSWORD
+        }
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
+    // 移除lint检查的error
+    lintOptions {
+        abortOnError false
+    }
+
+    //build type setting
+    buildTypes {
+
+        debug {
+            zipAlignEnabled false
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            zipAlignEnabled true
+            signingConfig signingConfigs.release
+        }
+    }
+
+    //product flavors
+    productFlavors {
+
+        oschina {
+            manifestPlaceholders = [UMENG_CHANNEL: "oschina"]
+        }
+
+        google {
+            manifestPlaceholders = [UMENG_CHANNEL: "google"]
+        }
+
+        tencent {
+            manifestPlaceholders = [UMENG_CHANNEL: "tentcent"]
+        }
+
+        wandoujia {
+            manifestPlaceholders = [UMENG_CHANNEL: "wandoujia"]
+        }
+
+        xiaomi {
+            manifestPlaceholders = [UMENG_CHANNEL: "xiaomi"]
+        }
+
+        huawei {
+            manifestPlaceholders = [UMENG_CHANNEL: "huawei"]
+        }
+    }
+}
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile(name: 'social_sdk_library_project', ext: 'aar')
+
+
+    compile 'com.android.support:support-v4:24.0.0'
+    compile 'com.android.support:appcompat-v7:24.0.0'
+    compile 'com.android.support:design:24.0.0'
+    compile 'com.android.support:recyclerview-v7:24.0.0'
+    compile 'com.android.support:cardview-v7:24.0.0'
+    compile 'com.github.chrisbanes.photoview:library:1.2.4'
+    compile 'com.loopj.android:android-async-http:1.4.9'
+    compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'org.kymjs.kjframe:kjframe:2.6'
+    compile 'com.google.zxing:core:3.2.0'
+    compile 'com.joanzapata.android:android-iconify:1.0.9'
+    compile 'com.makeramen:roundedimageview:2.1.1'
+    compile 'pub.devrel:easypermissions:0.1.7'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'de.hdodenhof:circleimageview:2.0.0'
+    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'net.qiujuer.genius:graphics:2.0.0-beta8'
+    compile 'net.qiujuer.genius:res:2.0.0-beta8'
+    compile 'net.qiujuer.genius:ui:2.0.0-beta8'
+    compile 'com.umeng.analytics:analytics:latest.integration'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3.1'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3.1'
+}
